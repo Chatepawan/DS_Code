@@ -1,0 +1,55 @@
+import mpi.*;
+
+public class ArraySumMPI {
+    public static void main(String[] args) throws Exception {
+        MPI.Init(args); // Initialize MPI
+
+        int rank = MPI.COMM_WORLD.Rank();     // Get current process ID
+        int size = MPI.COMM_WORLD.Size();     // Get total number of processes
+
+        int N = 8; // Total number of array elements (can be user input)
+        int[] fullArray = new int[N];
+
+        // Root process initializes array
+        if (rank == 0) {
+            for (int i = 0; i < N; i++) {
+                fullArray[i] = i + 1; // e.g., [1, 2, 3, ..., N]
+            }
+            System.out.println("Initial Array:");
+            for (int i = 0; i < N; i++) {
+                System.out.print(fullArray[i] + " ");
+            }
+            System.out.println();
+        }
+
+        int elementsPerProcess = N / size;
+        int[] localArray = new int[elementsPerProcess];
+
+        // Scatter the array to all processes
+        MPI.COMM_WORLD.Scatter(fullArray, 0, elementsPerProcess, MPI.INT,
+                               localArray, 0, elementsPerProcess, MPI.INT, 0);
+
+        // Each process calculates partial sum
+        int localSum = 0;
+        for (int i = 0; i < elementsPerProcess; i++) {
+            localSum += localArray[i];
+        }
+
+        System.out.println("Process " + rank + " calculated partial sum = " + localSum);
+
+        // Gather all partial sums at root
+        int[] partialSums = new int[size];
+        MPI.COMM_WORLD.Gather(new int[]{localSum}, 0, 1, MPI.INT,
+                              partialSums, 0, 1, MPI.INT, 0);
+
+        if (rank == 0) {
+            int totalSum = 0;
+            for (int sum : partialSums) {
+                totalSum += sum;
+            }
+            System.out.println("Total Sum of all elements = " + totalSum);
+        }
+
+        MPI.Finalize(); // Finalize MPI
+    }
+}

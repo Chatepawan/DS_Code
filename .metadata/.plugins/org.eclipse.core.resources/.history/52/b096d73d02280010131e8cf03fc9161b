@@ -1,0 +1,11 @@
+package CalcApp;
+
+public class CalcImpl extends CalcPOA {
+    public long add(long a, long b) {
+        return a + b;
+    }
+
+    public long sub(long a, long b) {
+        return a - b;
+    }
+}
