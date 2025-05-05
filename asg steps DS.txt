@@ -1,0 +1,62 @@
+Asg1 - RMI (Addition Program)
+
+Create the codes as per my GitHub
+
+1) Open terminal, cd your project path, cd bin
+2) Commands - rmic AddServerImpl
+3) Open new terminal - cd your project path, start rmiregistry
+4) In first terminal type command - java AddServer
+5) Open another terminal - cd your project path, java AddClient 127.0.0.1 10 20
+
+
+Asg2 - COBRA (Calculator Program)
+
+Create the codes as per my GitHub
+
+1) Create file Calc.idl
+2) Open terminal and type command - idlj -fall Calc.idl
+3) The files will be created copy that into new calcApp folder under src folder and also create Server and Client in that along with that also CalcImpl.java file
+4) Open terminal and type command - orbd -ORBInitialPort 1050 -ORBInitialHost localhost
+5) Open new terminal - cd project path and then cd bin and type command - java CalcApp.Server -ORBInitialPort 1050 -ORBInitialHost localhost
+6) Open another terminal - cd project path and then cd bin and type command - java CalcApp.Client -ORBInitialPort 1050 -ORBInitialHost localhost
+
+
+Asg3 - MPI (Sum Distribution)
+
+Create the codes as per my GitHub
+
+1) Open terminal navigate to your project and then do cd bin
+2) Type command - mpjrun.bat -np 4 -classpath ".;C:\mpj-v0_44\lib\mpj.jar" ArraySumMPI (For Windows)
+3) And for Ubuntu Linux terminal use this - mpjrun.sh -np 4 ArraySumMPI (file name)
+
+Asg4 - Berkeley Algorithm (Clock Synchronization)
+
+Create the codes as per my GitHub
+
+1) Create both file master_node.c and participating.c 
+2) mpicc master_node.c -o master_node
+mpicc participating_node.c -o participating_node
+3) mpiexec -n 1 ./master_node : -n 3 ./participating_node
+Explanation:
+
+-n 1 ./master_node: Run 1 master
+
+-n 3 ./participating_node: Run 3 slaves
+
+
+
+Asg5 - Token Ring based on mutual exclusion
+
+Create teh codes as per my GitHub
+
+Just run the main file as Java application
+
+
+Asg6 - Election Algorithm (Ring and Bully)
+
+Just copy from GitHub
+
+Run as java application 
+
+Done that's it.
+
