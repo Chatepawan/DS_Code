@@ -1,0 +1,90 @@
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+public class BerkeleyAlgorithm {
+
+    public static void main(String[] args) throws ParseException {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter number of clients in your network: ");
+        int clientCount = sc.nextInt();
+        sc.nextLine();
+
+        String[] timeString = new String[1 + clientCount];  // 1 server + clients
+
+        for (int i = 0; i < timeString.length; i++) {
+            if (i == 0) {
+                System.out.print("Enter time displayed in Server (HH:mm): ");
+            } else {
+                System.out.print("Enter time displayed in Client " + i + " (HH:mm): ");
+            }
+
+            String time = sc.nextLine();
+            timeString[i] = appendCurrentDateToTime(time);
+        }
+
+        System.out.println("\n-------------------- BEFORE SYNCHRONIZATION --------------------");
+        displayTime(timeString, "");
+
+        berkeleyAlgorithm(timeString);
+
+        System.out.println("\n-------------------- AFTER SYNCHRONIZATION ---------------------");
+        displayTime(timeString, "Synchronized ");
+
+        sc.close();
+    }
+
+    public static void berkeleyAlgorithm(String[] timeString) throws ParseException {
+        int n = timeString.length;
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm | yyyy-MM-dd");
+
+        long[] timeInMillis = new long[n];
+
+        for (int i = 0; i < n; i++) {
+            timeInMillis[i] = sdf.parse(timeString[i]).getTime();
+        }
+
+        long serverTime = timeInMillis[0];
+        long[] offsets = new long[n];
+        for (int i = 0; i < n; i++) {
+            offsets[i] = timeInMillis[i] - serverTime;
+        }
+
+        long sum = 0;
+        for (long offset : offsets) {
+            sum += offset;
+        }
+
+        long avgOffset = sum / n;
+        System.out.println("\nCalculated Average Offset: " + avgOffset / (60 * 1000) + " minutes");
+
+        for (int i = 0; i < n; i++) {
+            long adjustment = avgOffset - offsets[i];
+            timeInMillis[i] += adjustment;
+            if (i != 0) {
+                System.out.println("Adjustment for Client " + i + ": " + (adjustment / (60 * 1000)) + " minutes");
+            }
+        }
+
+        for (int i = 0; i < n; i++) {
+            timeString[i] = sdf.format(new Date(timeInMillis[i]));
+        }
+    }
+
+    private static void displayTime(String[] time, String prefix) {
+        System.out.println(prefix + "Server Clock:\t" + time[0]);
+        for (int i = 1; i < time.length; i++) {
+            System.out.println(prefix + "Client " + i + " Clock:\t" + time[i]);
+        }
+        System.out.println();
+    }
+
+    private static String appendCurrentDateToTime(String time) {
+        Calendar c = Calendar.getInstance();
+        return time + " | " + c.get(Calendar.YEAR) + "-" + (c.get(Calendar.MONTH) + 1) + "-" + c.get(Calendar.DAY_OF_MONTH);
+    }
+}
+
+
+Just run it as java application

@@ -1,0 +1,98 @@
+Calc.idl
+
+module CalcApp {
+    interface Calc {
+        long add(in long a, in long b);
+        long sub(in long a, in long b);
+    };
+};
+
+/*________________________*/
+
+Client.java
+
+package CalcApp;
+
+import org.omg.CORBA.*;
+import org.omg.CosNaming.*;
+
+public class Client {
+    public static void main(String[] args) {
+        try {
+            ORB orb = ORB.init(args, null);
+            org.omg.CORBA.Object objRef = orb.resolve_initial_references("NameService");
+            NamingContextExt ncRef = NamingContextExtHelper.narrow(objRef);
+
+            Calc calcImpl = CalcHelper.narrow(ncRef.resolve_str("Calc"));
+
+            System.out.println("Result of 5 + 3 = " + calcImpl.add(5, 3));
+            System.out.println("Result of 10 - 4 = " + calcImpl.sub(10, 4));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+/*_________________________*/
+
+Server.java
+
+package CalcApp;
+
+import org.omg.CORBA.*;
+import org.omg.PortableServer.*;
+import org.omg.CosNaming.*;
+
+public class Server {
+    public static void main(String[] args) {
+        try {
+            ORB orb = ORB.init(args, null);
+            POA rootPOA = POAHelper.narrow(orb.resolve_initial_references("RootPOA"));
+            rootPOA.the_POAManager().activate();
+
+            CalcImpl calcImpl = new CalcImpl();
+            org.omg.CORBA.Object ref = rootPOA.servant_to_reference(calcImpl);
+            Calc href = CalcHelper.narrow(ref);
+
+            org.omg.CORBA.Object objRef = orb.resolve_initial_references("NameService");
+            NamingContextExt ncRef = NamingContextExtHelper.narrow(objRef);
+
+            NameComponent path[] = ncRef.to_name("Calc");
+            ncRef.rebind(path, href);
+
+            System.out.println("Server ready and waiting...");
+            orb.run();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+
+/*______________________________*/
+
+CalcImpl.java
+
+package CalcApp;
+
+public class CalcImpl extends CalcPOA {
+    public int add(int a, int b) {
+        return a + b;
+    }
+
+    public int sub(int a, int b) {
+        return a - b;
+    }
+}
+
+/*______________________*/
+
+Steps to Implement
+
+1) Create file Calc.idl
+2) Open terminal and type command - idlj -fall Calc.idl
+3) The files will be created copy that into new calcApp folder under src folder and also create Server and Client in that along with that also CalcImpl.java file
+4) Open terminal and type command - orbd -ORBInitialPort 1050 -ORBInitialHost localhost
+5) Open new terminal - cd project path and then cd bin and type command - java CalcApp.Server -ORBInitialPort 1050 -ORBInitialHost localhost
+6) Open another terminal - cd project path and then cd bin and type command - java CalcApp.Client -ORBInitialPort 1050 -ORBInitialHost localhost

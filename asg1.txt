@@ -1,0 +1,79 @@
+AddClient.java
+
+import java.rmi.*;
+
+public class AddClient {
+    public static void main(String[] args) {
+        if (args.length != 3) {
+            System.out.println("Usage: java AddClient <server-ip> <num1> <num2>");
+            return;
+        }
+
+        try {
+            String serverURL = "rmi://" + args[0] + "/AddServer";
+            AddServerIntf obj = (AddServerIntf) Naming.lookup(serverURL);
+            double d1 = Double.parseDouble(args[1]);
+            double d2 = Double.parseDouble(args[2]);
+            double result = obj.add(d1, d2);
+            System.out.println("Result = " + result);
+        } catch (Exception e) {
+            System.out.println("Client Exception: " + e);
+        }
+    }
+}
+
+
+/*___________________________*/
+AddServer.java
+
+import java.rmi.*;
+
+public class AddServer {
+    public static void main(String[] args) {
+        try {
+            AddServerImpl obj = new AddServerImpl();
+            Naming.rebind("AddServer", obj);
+            System.out.println("AddServer is ready...");
+        } catch (Exception e) {
+            System.out.println("Server Exception: " + e);
+        }
+    }
+}
+
+/*___________________*/
+
+AddServerImpl.java
+
+import java.rmi.*;
+import java.rmi.server.*;
+
+public class AddServerImpl extends UnicastRemoteObject implements AddServerIntf {
+    public AddServerImpl() throws RemoteException {
+        super();
+    }
+
+    public double add(double d1, double d2) throws RemoteException {
+        return d1 + d2;
+    }
+}
+
+/*__________________________*/
+
+AddServerIntf.java
+
+import java.rmi.*;
+
+public interface AddServerIntf extends Remote {
+    double add(double d1, double d2) throws RemoteException;
+}
+
+
+/*_________________________*/
+
+Steps to implement
+
+1) Open terminal, cd your project path, cd bin
+2) Commands - rmic AddServerImpl
+3) Open new terminal - cd your project path, start rmiregistry
+4) In first terminal type command - java AddServer
+5) Open another terminal - cd your project path, java AddClient 127.0.0.1 10 20

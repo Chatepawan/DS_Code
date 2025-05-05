@@ -1,0 +1,72 @@
+import java.util.*;
+
+public class TokenRing {
+    public static void main(String args[]) {
+        Scanner input = new Scanner(System.in);
+        System.out.println("----------------------------------------------------------");
+        System.out.print("*** Enter the number of nodes to form ring: ");
+        int n = input.nextInt(); // number of nodes in the ring
+        System.out.println();
+
+        int token = 0; // token starts at node 0
+        int ch; // user's choice to continue
+        int flag; // input validation flag
+
+        // Display ring formation
+        System.out.print("Ring formation: ");
+        for (int i = 0; i < n; i++) {
+            System.out.print(i + " ");
+        }
+        System.out.println(0); // to show circular nature
+
+        do {
+            flag = 0;
+            System.out.println("----------------------------------------------------------");
+            System.out.print("** Enter sender from above nodes displayed: ");
+            int sender = input.nextInt();
+
+            System.out.print("** Enter receiver from above nodes displayed: ");
+            int receiver = input.nextInt();
+
+            System.out.print("** Enter data to process: ");
+            int data = input.nextInt();
+            System.out.println();
+
+            // Token passing to sender
+            System.out.print("Token passing: ");
+            for (int i = token; i % n != sender; i++) {
+                System.out.print((i % n) + " -> ");
+            }
+            System.out.println(sender);
+
+            // Sender sends data
+            System.out.println("------> Sender " + sender + " sending data: " + data);
+
+            // Forward data from sender to receiver
+            for (int i = (sender + 1) % n; i != receiver; i = (i + 1) % n) {
+                System.out.println("Data " + data + " forwarded by node " + i);
+            }
+
+            System.out.println("------> Receiver " + receiver + " received data: " + data);
+            System.out.println("----------------------------------------------------------");
+
+            // Token now resides with the sender
+            token = sender;
+
+            // Ask user if they want to send more data
+            do {
+                System.out.print("Do you want to send again? Enter 1 for Yes, 0 for No: ");
+                ch = input.nextInt();
+                if (ch != 0 && ch != 1) {
+                    System.out.println("Invalid input. Please enter 1 or 0.");
+                    flag = 1;
+                } else {
+                    flag = 0;
+                }
+            } while (flag == 1);
+
+        } while (ch == 1);
+        input.close();
+    }
+}
+
